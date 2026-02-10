@@ -33,7 +33,7 @@ type ChatProps = {
 export default function Chat({ nickname, onLogout }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
@@ -52,10 +52,7 @@ export default function Chat({ nickname, onLogout }: ChatProps) {
   }, []);
 
   useEffect(() => {
-    const viewport = scrollAreaRef.current?.querySelector("div[data-radix-scroll-area-viewport]");
-    if (viewport) {
-      viewport.scrollTop = viewport.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView();
   }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -92,7 +89,7 @@ export default function Chat({ nickname, onLogout }: ChatProps) {
           </Button>
         </CardHeader>
         <CardContent className="flex-1 p-0">
-          <ScrollArea className="h-full" ref={scrollAreaRef}>
+          <ScrollArea className="h-full">
             <div className="p-6 space-y-4">
             {messages.map((msg) => (
               <div
@@ -133,6 +130,7 @@ export default function Chat({ nickname, onLogout }: ChatProps) {
                 )}
               </div>
             ))}
+            <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
         </CardContent>
